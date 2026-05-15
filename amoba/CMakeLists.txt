@@ -20,5 +20,7 @@ add_executable(CLionGraphicsKit main.cpp
         Button.cpp
         Button.hpp
         input_widget.cpp
-        input_widget.hpp)
+        input_widget.hpp
+        Screen.cpp
+        Screen.hpp)
 target_link_libraries(CLionGraphicsKit graphics)

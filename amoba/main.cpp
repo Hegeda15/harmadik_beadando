@@ -1,93 +1,112 @@
-#include "counter_widget.hpp"
-#include "graphics.hpp"
 #include "Application.hpp"
-#include "widget.hpp"
-#include <fstream>
-#include <vector>
-#include <string>
-#include <iostream>
-
+#include "screen.hpp"
 #include "Button.hpp"
 #include "listBox_widget.hpp"
-using namespace genv;
+#include <sstream>
 
-struct Vmi {
-    std::string berlo;
-    std::string kocsi;
-};
 
 class MyApp : public Application {
-public:
-    MyApp() {
+protected:
+    Screen* tabla;
+    Button* uj_jatek_btn;
+    listBox_widget* log;
 
-        std::vector<std::string>lwItems={"Zohan","Keleti Barat","Karika","T-home","Hege","Szolti","Roni"};
-        std::vector<std::string> lwItems2 = {"Audi", "BMW", "Honda", "Toyota", "Mercedes", "Opel"};
-        std::vector<std::string> lwItems3 = {};
+    bool x_jon = true;
+    bool jatek_vege = false;
+    int lepesek = 0;
 
-       lw1= new listBox_widget(this, 10, 200, 100, 200, lwItems);
-       lw2= new listBox_widget(this, 300, 200, 100, 200, lwItems2);
-        lw3= new listBox_widget(this, 10, 400, 100, 200, lwItems3);
-
-        b = new Button(this, 10, 40, 40, 40,
-     [this]() { action("berles"); },
-     []() { std::cout << "hover\n"; },
-     []() { std::cout << "leave\n"; });
-
-        b2 = new Button(this, 100, 40, 40, 40,
-     [this]() { action("vissza"); },          // click
-     []() { std::cout << "hover\n"; },        // hover
-     []() { std::cout << "leave\n"; });
+    // Szabályellenőrzés
+    bool check_win(int s, int o, Mezo m) {
+        int iranyok[4][2] = {{0,1}, {1,0}, {1,1}, {1,-1}};
+        for (auto &i : iranyok) {
+            int db = 1;
+            for (int j = 1; j < 5; j++) { // egy irányba
+                int ns = s + i[0]*j, no = o + i[1]*j;
+                if (ns>=0 && ns<15 && no>=0 && no<15 && tabla->getMezo(ns,no)==m) db++; else break;
+            }
+            for (int j = 1; j < 5; j++) { // ellentétes irányba
+                int ns = s - i[0]*j, no = o - i[1]*j;
+                if (ns>=0 && ns<15 && no>=0 && no<15 && tabla->getMezo(ns,no)==m) db++; else break;
+            }
+            if (db >= 5) return true;
+        }
+        return false;
     }
 
-    virtual void action(std::string id) override {
-
-        std::string bérlő = lw1->getValue();
-        std::string autó = lw2->getValue();
-        std::string kiválasztottBérlés = lw3->getValue();
-
-        Vmi v;
-        v.berlo = bérlő;
-        v.kocsi = autó;
-
-        if (id == "berles" && !autó.empty()) {
-                lw2->csere();
-                lw3->add(v.berlo + " : " + v.kocsi);
-                berlovec.push_back(v);
-        }
-
-        if (id == "vissza"&& !kiválasztottBérlés.empty()) {
-            if (!berlovec.empty()) {
-                Vmi utolso = berlovec.back();
-
-                lw3->csere();
-
-                lw2->add(utolso.kocsi);
-
-                berlovec.pop_back();
+    // Egyszerű AI (Extra pont)
+    void ai_lepes() {
+        if (jatek_vege) return;
+        for (int s = 0; s < 15; s++) {
+            for (int o = 0; o < 15; o++) {
+                if (tabla->getMezo(s, o) == URES) {
+                    action("lepes:" + std::to_string(s) + "," + std::to_string(o));
+                    return;
+                }
             }
         }
     }
-protected:
-    listBox_widget* lw1;
-    listBox_widget* lw2;
-    listBox_widget* lw3;
-    std::vector<Vmi> berlovec;
-    Button* b;
-    Button* b2;
 
+public:
+    MyApp() {
+        // Tábla: 15x15-ös, 30 pixel széles cellákkal
+        tabla = new Screen( this, 25, 25, 15, 30);
+
+        // Meglévő listbox logoláshoz
+        log = new listBox_widget(this, 500, 25, 250, 350, {"--- JATEK NAPLO ---"});
+
+        // Meglévő Button újraindításhoz
+        uj_jatek_btn = new Button(this, 500, 390, 250, 40,
+            [this](){ action("reset"); }, // Click
+            nullptr, // Hover (opcionális)
+            nullptr  // Leave (opcionális)
+        );
+        Button* exit_btn = new Button(this, 500, 440, 250, 40,
+            [](){ exit(0); }
+        );
+    }
+
+    virtual void action(std::string id) override {
+        if (id == "reset") {
+            tabla->reset();
+            x_jon = true;
+            jatek_vege = false;
+            lepesek = 0;
+            log->add("Uj jatek!");
+            return;
+        }
+
+        if (jatek_vege) return;
+
+        if (id.find("lepes:") == 0) {
+            std::stringstream ss(id.substr(6));
+            int s, o; char c;
+            ss >> s >> c >> o;
+
+            if (tabla->getMezo(s, o) == URES) {
+                Mezo aktualis = x_jon ? X_JEL : O_JEL;
+                tabla->setMezo(s, o, aktualis);
+                lepesek++;
+
+                log->add((x_jon ? "X: " : "O: ") + std::to_string(s) + "," + std::to_string(o));
+
+                if (check_win(s, o, aktualis)) {
+                    log->add(x_jon ? "X NYERT!" : "O NYERT!");
+                    jatek_vege = true;
+                } else if (lepesek == 15*15) {
+                    log->add("DONTETLEN!");
+                    jatek_vege = true;
+                } else {
+                    x_jon = !x_jon;
+                    if (!x_jon) ai_lepes(); // Gép jön
+                }
+            }
+        }
+    }
 };
 
-
-
-int main()
-{
-    gout.open(600, 600);
+int main() {
+    genv::gout.open(800, 500);
     MyApp app;
     app.event_loop();
-
-
-
-
-
     return 0;
 }
