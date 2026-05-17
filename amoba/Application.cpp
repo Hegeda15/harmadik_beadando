@@ -17,7 +17,7 @@ void Application::event_loop() {
     event ev;
     int screen_w = 800;
     int screen_h = 500;
-
+    genv::gout.open(screen_w, screen_h);
     while (gin >> ev) {
         gout << move_to(0, 0) << color(240, 240, 240) << box(screen_w, screen_h);
         if (ev.type == ev_mouse && ev.button == btn_left) {

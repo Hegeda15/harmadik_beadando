@@ -23,7 +23,7 @@ void Button::draw() {
    gout << color(0, 0, 0) << move_to(x, y) << line(w, 0) << line(0, h) << line(-w, 0) << line(0, -h);
 
 
-   
+
 }
 
 void Button::handle(genv::event ev) {
