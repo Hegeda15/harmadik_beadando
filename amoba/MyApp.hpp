@@ -6,8 +6,10 @@
 #define CLIONGRAPHICSKIT_MYAPP_HPP
 #include "Application.hpp"
 #include "Button.hpp"
+#include "counter_widget.hpp"
 #include "listBox_widget.hpp"
 #include "screen.hpp"
+#include "Text_Block.hpp"
 
 
 class MyApp:public Application {
@@ -15,7 +17,8 @@ protected:
     Screen* tabla;
     Button* uj_jatek_btn;
     listBox_widget* log;
-
+    counter_widget* nehezseg_allito;
+    Text_Block *tb1;
     bool x_jon = true;
     bool jatek_vege = false;
     int lepesek = 0;

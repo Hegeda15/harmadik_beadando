@@ -47,32 +47,37 @@ void counter_widget::handle(event ev)
 {
     if (ev.type == ev_mouse && ev.button == btn_left)
     {
-        if (ev.pos_x >= x && ev.pos_x <= y + w &&
+
+        if (ev.pos_x >= x && ev.pos_x <= x + w &&
             ev.pos_y >= y && ev.pos_y <= y + h)
         {
-            //gombok
-            if (ev.pos_x > x + w - 20 &&
-                ev.pos_y < y + h/2)
+            int gomb_hatar_y = y + (h / 2);
+
+
+            if (ev.pos_x > x + w - 20)
             {
-                value++;
+
+                if (ev.pos_y < gomb_hatar_y)
+                {
+                    value++;
+                }
+                else
+                {
+                    value--;
+                }
             }
 
-            else if (ev.pos_x > x + w - 20 &&
-                     ev.pos_y >= y + h/2)
-            {
-                value--;
-            }
 
             if (value < min) value = min;
             if (value > max) value = max;
         }
     }
+
     if (ev.type == ev_key) {
         if (ev.keycode == key_up) value++;
         if (ev.keycode == key_down) value--;
         if (ev.keycode == key_pgup) value += 10;
         if (ev.keycode == key_pgdn) value -= 10;
-
 
         if (value < min) value = min;
         if (value > max) value = max;

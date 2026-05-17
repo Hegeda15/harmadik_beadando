@@ -9,9 +9,12 @@ MyApp::MyApp(){
 
     log = new listBox_widget(this, 500, 25, 150, 200, {"--- JATEK NAPLO ---"});
 
-    // Gombok: A lista alatt
+
+    tb1= new Text_Block(this,500,280,100,30,"AI Level");
+    nehezseg_allito = new counter_widget(this, 500, 290, 40, 200, 1, 3);
+
     uj_jatek_btn = new Button(this, 500, 200, 30, 100,"New Game",
-    [this](){ action("reset"); }, // Click
+    [this](){ action("reset"); },
     nullptr,
     nullptr
     );
@@ -65,12 +68,25 @@ void MyApp::ai_lepes() {
     int legjobb_s = -1, legjobb_o = -1;
     int max_pont = -1;
 
+
+    int szint = nehezseg_allito->getIntValue();
+
+
+    double vedekezes_szorzo = 0.5;
+    if (szint == 1) {
+        vedekezes_szorzo = 0.1;
+    } else if (szint == 3) {
+        vedekezes_szorzo = 1.5;
+    }
+
     for (int s = 0; s < 15; s++) {
         for (int o = 0; o < 15; o++) {
             if (tabla->getMezo(s, o) == URES) {
                 int tamadas = mezo_ertekeles(s, o, O_JEL);
                 int vedekezes = mezo_ertekeles(s, o, X_JEL);
-                int aktualis_ertek = tamadas + (int)(vedekezes * 0.5);
+
+
+                int aktualis_ertek = tamadas + (int)(vedekezes * vedekezes_szorzo);
 
                 if (aktualis_ertek > max_pont) {
                     max_pont = aktualis_ertek;
