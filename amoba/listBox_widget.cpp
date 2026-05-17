@@ -174,3 +174,7 @@ void listBox_widget::csere() {
 void listBox_widget::add(const std::string& value) {
     items.push_back(value);
 }
+
+void listBox_widget::clear() {
+    items.clear();
+}

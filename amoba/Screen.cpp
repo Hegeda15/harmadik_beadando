@@ -18,20 +18,17 @@ void Screen::draw() {
             int cx = x + o * _cella;
             int cy = y + s * _cella;
 
-            // Alap cella (enyhe szürke rács)
             gout << move_to(cx, cy) << color(180, 180, 180) << box(_cella, _cella);
             gout << move_to(cx + 1, cy + 1) << color(255, 255, 255) << box(_cella - 2, _cella - 2);
 
             // Jelek kirajzolása
             if (_tabla[s][o] == X_JEL) {
-                // Vastag piros X
                 gout << color(200, 0, 0);
-                for(int i=-1; i<=1; i++) { // Vonalvastagítás
+                for(int i=-1; i<=1; i++) {
                     gout << move_to(cx + 6 + i, cy + 6) << line(_cella - 12, _cella - 12);
                     gout << move_to(cx + _cella - 6 + i, cy + 6) << line(-(_cella - 12), _cella - 12);
                 }
             } else if (_tabla[s][o] == O_JEL) {
-                // Sötétkék kör (vagy elegánsabb kitöltött négyzet kerekítve)
                 gout << color(0, 0, 150);
                 gout << move_to(cx + 8, cy + 8) << box(_cella - 16, _cella - 16);
                 gout << move_to(cx + 10, cy + 10) << color(255, 255, 255) << box(_cella - 20, _cella - 20);

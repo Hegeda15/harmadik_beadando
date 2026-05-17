@@ -16,14 +16,16 @@ class Button : public widget {
     std::function<void()> onClick;
     std::function<void()> onHover;
     std::function<void()> onLeave;
-
+    std::string label;
     bool hovered = false;
 
     public:
     Button(Application* parent, int x, int y, int w, int h,
+             std::string label,
            std::function<void()> click = nullptr,
            std::function<void()> hover = nullptr,
-           std::function<void()> leave = nullptr);
+           std::function<void()> leave = nullptr
+          );
 
     void draw() override;
     void handle(genv::event ev) override;

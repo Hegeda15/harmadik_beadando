@@ -5,23 +5,25 @@
 #include "Button.hpp"
 using namespace genv;
 Button::Button(Application* parent, int x, int y, int w, int h,
+               std::string label,
                std::function<void()> click,
                std::function<void()> hover,
-               std::function<void()> leave)
-    : widget(parent,x,y,w,h), onClick(click), onHover(hover), onLeave(leave) {}
+               std::function<void()> leave
+               )
+
+    : widget(parent,x,y,w,h), onClick(click), onHover(hover), onLeave(leave), label(label) {}
 
 void Button::draw() {
-   gout<<move_to(x,y)<<genv::color(230,230,230)<<box(w,h);
-   gout << move_to(x, y) << color(0,0,0) << line(w, 0);
+   if (hovered) gout << color(200, 200, 210);
+   else gout << color(220, 220, 220);
+
+   gout << move_to(x, y) << box(w, h)<<move_to(x+10,y+20)<<color(0,0,0)<<text(label);
 
 
-   gout << move_to(x, y) << line(0, h);
+   gout << color(0, 0, 0) << move_to(x, y) << line(w, 0) << line(0, h) << line(-w, 0) << line(0, -h);
 
 
-   gout << move_to(x + w, y) << line(0, h);
-
-
-   gout << move_to(x, y + h) << line(w, 0);
+   
 }
 
 void Button::handle(genv::event ev) {

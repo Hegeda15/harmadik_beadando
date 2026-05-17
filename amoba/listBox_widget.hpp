@@ -20,7 +20,7 @@ public:
     virtual std::string getValue() const override;
 
     virtual void csere();
-
+    virtual void clear();
     virtual void add(const std::string& value);
 };
 

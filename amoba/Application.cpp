@@ -15,11 +15,11 @@ void Application::register_widget(widget* w) {
 
 void Application::event_loop() {
     event ev;
-    int screen_w = 600;
-    int screen_h = 600;
+    int screen_w = 800;
+    int screen_h = 500;
 
     while (gin >> ev) {
-
+        gout << move_to(0, 0) << color(240, 240, 240) << box(screen_w, screen_h);
         if (ev.type == ev_mouse && ev.button == btn_left) {
             _focus = -1;
             for (size_t i = 0; i < _widgets.size(); i++) {
