@@ -28,3 +28,29 @@ add_executable(CLionGraphicsKit main.cpp
         Text_Block.cpp
         Text_Block.hpp)
 target_link_libraries(CLionGraphicsKit graphics)
+
+
+# --- AUTOMATIKUS DLL MÁSOLÁS ---
+add_custom_command(TARGET CLionGraphicsKit POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/bin/SDL2.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/SDL2.dll"
+)
+
+add_custom_command(TARGET CLionGraphicsKit POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/bin/SDL2_ttf.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/SDL2_ttf.dll"
+)
+
+add_custom_command(TARGET CLionGraphicsKit POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/bin/libfreetype-6.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/libfreetype-6.dll"
+)
+
+add_custom_command(TARGET CLionGraphicsKit POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${CMAKE_CURRENT_SOURCE_DIR}/bin/zlib1.dll"
+        "${CMAKE_CURRENT_BINARY_DIR}/zlib1.dll"
+)
